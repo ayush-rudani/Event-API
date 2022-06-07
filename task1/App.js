@@ -1,18 +1,26 @@
-const mongo = require('mongodb');
-const express = require('express');
-const app = express();
+const express = require('express')
+const mongodb = require('mongodb')
+const { MongoClient } = require("mongodb");
+const app = express()
+var db;
+let port = process.env.PORT || 3000;
+let url = "mongodb://localhost:27017/eventdb";
 
-var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://localhost:27017/eventdb";
 
-MongoClient.connect(url, function (err, db) {
-    if (err) throw err;
-    let dbo = db.db("eventdb");
-    // dbo.createCollection("events", function (err, res) {
-    //     if (err) throw err;
-    //     console.log("Collection created!");
-    //     db.close();
-    // });
+MongoClient.connect(url, { useNewUrlParser: true }, (error, client) => {
+    if (error) {
+        return console.log("Connection failed for some reason");
+    }
+    console.log("Connection established - All well");
+    db = client.db();
 });
+// ------------------------------------------------------
+
+app.use(express.json());
+const eventR = require('./server/routes/events');
+app.use('/api/v3/app/events', eventR);
 
 
+
+// ------------------------------------------------------
+app.listen(port, () => console.log(`App listening on port ${port}!`));
