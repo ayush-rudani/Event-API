@@ -5,10 +5,8 @@ const dbo = require('./server/Dao');
 const app = express()
 let db;
 let port = process.env.PORT || 3000;
+
 // let url = "mongodb://localhost:27017/eventdb";
-
-
-
 // MongoClient.connect(url, { useNewUrlParser: true }, (error, client) => {
 //     if (error) {
 //         return console.log("Connection failed for some reason");
@@ -18,8 +16,6 @@ let port = process.env.PORT || 3000;
 // });
 // module.exports.db = db;
 
-
-
 // ------------------------------------------------------
 
 app.get('/', (req, res) => {
@@ -28,7 +24,7 @@ app.get('/', (req, res) => {
 
 app.use(express.json());
 const eventR = require('./server/routes/events');
-app.use('/api/v3/app',eventR);
+app.use('/api/v3/app', eventR);
 
 
 

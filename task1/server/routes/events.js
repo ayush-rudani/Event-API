@@ -16,22 +16,27 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage })
 
-
-
 router.get("/events", async (req, res) => {
     let db_con = dbo.getDb();
-    let qs = req.query.id;
-    let myquery = { _id: ObjectId(qs) };
-    db_con.collection("events").findOne(myquery, (err, result) => {
-        if (err) throw err;
-        res.json(result);
-    })
-    // db_con.collection("events").find({}).toArray((err, result) => {
-    //     if (err)
-    //         throw err;
-    //     res.json(result);
-    // });
+    let { id, type, limit, page } = req.query;
+    if (id != undefined) {
+        let myquery = { _id: ObjectId(id) };
+        db_con.collection("events").findOne(myquery, (err, result) => {
+            if (err) throw err;
+            res.json(result);
+        });
+    }
+
+    else if (limit != undefined && page != undefined) {
+        limit = parseInt(limit);
+        page = parseInt(page);
+        db_con.collection("events").find().sort({ schedule: -1 }).skip(page).limit(limit).toArray((err, result) => {
+            if (err) throw err;
+            res.json(result);
+        });;
+    }
 });
+
 
 router.post("/events", upload.single('eventImage'), async (req, res) => {
 
@@ -40,7 +45,7 @@ router.post("/events", upload.single('eventImage'), async (req, res) => {
         uid: req.body.uid,
         name: req.body.name,
         tagline: req.body.tagline,
-        schedule: req.body.schedule,
+        schedule: new Date(req.body.schedule),  //Date Formate -> 2020-01-21
         images: [req.file.path],
         description: req.body.description,
         moderator: req.body.moderator,
@@ -59,6 +64,30 @@ router.post("/events", upload.single('eventImage'), async (req, res) => {
     });
 });
 
+router.patch("/events/:id", (req, res) => {
+    let db_con = dbo.getDb();
+    const id = req.params.id;
+    let myquery = { _id: ObjectId(id) };
+    const newValues = req.body;
+
+    db_con.collection("events").updateOne(myquery, { $set: { ...newValues } }, (err, result) => {
+        if (err)
+            throw err;
+        res.json(result);
+    })
+});
+
+
+router.delete("/events/:id", (req, res) => {
+    let db_con = dbo.getDb();
+    const id = req.params.id;
+    let myquery = { _id: ObjectId(id) };
+    db_con.collection("events").deleteOne(myquery, (err, result) => {
+        if (err)
+            throw err;
+        res.json(result);
+    })
+});
 
 
 module.exports = router;
