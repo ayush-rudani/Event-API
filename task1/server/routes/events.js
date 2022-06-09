@@ -3,8 +3,6 @@ const router = require('express').Router();
 const dbo = require('../Dao')
 const multer = require('multer');
 const ObjectId = require("mongodb").ObjectId;
-
-
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, './uploads/');
@@ -13,8 +11,8 @@ const storage = multer.diskStorage({
         cb(null, new Date().toISOString().replace(/:/g, '-') + file.originalname);
     }
 });
-
 const upload = multer({ storage: storage })
+
 
 router.get("/events", async (req, res) => {
     let db_con = dbo.getDb();
