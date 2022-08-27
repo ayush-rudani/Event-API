@@ -1,1 +1,3 @@
-task1/uploads/*.*
+API/uploads/*.*
+API/node_modules/
+**node_modules
